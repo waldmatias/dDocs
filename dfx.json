@@ -1,0 +1,13 @@
+{
+    "canisters": {
+        "dDocs": {
+            "type": "custom",
+            "main": "src/index.ts",
+            "candid": "src/index.did",
+            "build": "npx azle dDocs",
+            "wasm": ".azle/dDocs/dDocs.wasm",
+            "gzip": true
+        }
+    }
+}
+

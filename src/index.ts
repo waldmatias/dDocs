@@ -1,4 +1,4 @@
-import { AzleBlob, Canister, query, text, update, Void } from 'azle';
+import { Canister, query, text, update, Void, Record, Vec, bool, StableBTreeMap, Principal } from 'azle';
 
 // This is a global variable that is stored on the heap
 let message = '';
@@ -16,10 +16,40 @@ let message = '';
 // v.2
 // type doc-item-change
 //  propose_changes(doc-item) -- merging?
+const Tarea = Record({
+    id: Principal, 
+    actividad: text, 
+    estado: bool,
+})
 
-
+let tareas = StableBTreeMap(Principal, Tarea, 0);
 
 export default Canister({
+
+    // mw 
+    createTarea: update([text, bool], Tarea, (actividad, estado) => {
+        const id = generarID();
+
+        const tarea: typeof Tarea = {
+            id, 
+            actividad,
+            estado,
+        };
+
+        tareas.insert(tarea.id, tarea, 0);
+
+        return tarea;
+    }), 
+
+    muestraTareas: query([], Vec(Tarea), () => {
+        return tareas.values();
+    }),
+    // mw
+
+    getAuthor: query([text], text, (author) => {
+        return author;
+    }), 
+
     // Query calls complete quickly because they do not go through consensus
     getMessage: query([], text, () => {
         return message;
@@ -31,3 +61,10 @@ export default Canister({
     })
 });
 
+function generarID(): Principal {
+    const randomBytes = new Array(29)
+        .fill(0)
+        .map((_) => Math.floor(Math.random() * 256));
+
+    return Principal.fromUint8Array(Uint8Array.from(randomBytes))
+}

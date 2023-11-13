@@ -1,4 +1,7 @@
 service: () -> {
+    createTarea: (text, bool) -> (record {id:principal; actividad:text; estado:bool});
+    getAuthor: (text) -> (text) query;
     getMessage: () -> (text) query;
+    muestraTareas: () -> (vec record {id:principal; actividad:text; estado:bool}) query;
     setMessage: (text) -> ();
 }

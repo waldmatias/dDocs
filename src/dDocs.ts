@@ -1,40 +1,58 @@
-import { Principal, Record, Variant, text, Null } from "azle";
+import { Principal, Record, Variant, text, Null, update, bool, Void } from "azle";
 
-const UserRole = Variant({
+export const UserRole = Variant({
     Admin: Null, 
+    Viewer: Null, 
     Author: Null, 
     Editor: Null,
 });
 
-const User = Record({
+export const User = Record({
     id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
-    role: UserRole, // Author | Editor | Admin
+    role: UserRole, // Viewer, Author | Editor | Admin
     username: text, 
     email: text
 });
 
-const Article = Record({ 
+export const Article = Record({ 
     author: User, // owner
     content: text
 });
 
-const ArticleStatus = Variant({
+export const ArticleStatus = Variant({
     Draft: Null, 
     Published: Null, 
 });
 
-const ContentDB = Record({
+export const ContentDB = Record({
     article: Article, 
     // author: -- optimization
     status: ArticleStatus, 
 });
 
-const AccessControlPermission = Variant({
+export const AccessControlPermission = Variant({
     View: Null, 
     Edit: Null, 
     Delete: Null, 
-})
-const AccessControl = Record({
+});
+
+export const AccessControl = Record({
     user: User, 
     permission: AccessControlPermission, // View (default) | Edit | Delete
 });
+
+/* Init */
+export const init = update([Principal], Void, (principal) => {
+    
+});
+
+/* User Management */
+export const registerUser = update([Principal, text, text], bool, (principal, username, email) => {
+    return true; 
+});
+
+export const approveUser = () => {}; // only admin
+export const revokeUser = () => {}; // only admin
+
+// article management
+// article management: publishing flow

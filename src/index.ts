@@ -1,5 +1,5 @@
 import { Canister, query, update, Void, text } from 'azle';
-
+import { init, registerUser } from './dDocs';
 
 // v.1
 // type doc-item: Article(Blob) { item-type: text | mime-type, owner, published }
@@ -17,6 +17,11 @@ import { Canister, query, update, Void, text } from 'azle';
 // process urls: transform url links to canister call getArticle()
 
 export default Canister({
+    // dDocs init
+    init, 
+    /* User Management */ 
+    registerUser, 
+
     // init: set caller() to admin. Allow transfer to other admin? 
     // transferAdmin (only current admin can change/transfer to other user)
 

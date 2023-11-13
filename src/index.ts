@@ -1,5 +1,5 @@
 import { Canister, query, update, Void, text } from 'azle';
-import { initApp, isAdmin, getCurrentAdmin, transferAdmin, registerUser } from './dDocs';
+import { initApp, isAdmin, getCurrentAdmin, transferAdmin, registerUser, fetchArticles } from './dDocs';
 
 // v.1
 // type doc-item: Article(Blob) { item-type: text | mime-type, owner, published }
@@ -27,5 +27,6 @@ export default Canister({
     registerUser, 
     /* Article Management */
     // fetchArticle
+    fetchArticles,
     // updateArticle (if no id, then createArticle)
 });

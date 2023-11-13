@@ -1,5 +1,5 @@
 service: () -> {
-    getAuthor: (text) -> (text) query;
+    fetchArticles: () -> (vec record {status:variant {Draft; Published}; content:text; author:record {id:principal; username:text; role:variant {Viewer; Editor; Author; Admin}; email:text}}) query;
     getCurrentAdmin: () -> (principal) query;
     initApp: (text) -> ();
     isAdmin: () -> (bool) query;

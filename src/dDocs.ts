@@ -5,11 +5,12 @@ import {
 } from "azle";
 
 export const UserRole = Variant({
-    Admin: Null, 
     Viewer: Null, 
-    Author: Null, 
-    Editor: Null,
+    Author: Null, // +Viewer 
+    Editor: Null, // +Author
+    Admin: Null,  // +Editor
 });
+export type UserRoleKind = typeof UserRole;
 
 export const User = Record({
     id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
@@ -22,6 +23,7 @@ export const ArticleStatus = Variant({
     Draft: Null, 
     Published: Null, 
 });
+export type ArticleStatusKind = typeof ArticleStatus;
 
 export const Article = Record({ 
     author: User, // owner
@@ -29,23 +31,24 @@ export const Article = Record({
     status: ArticleStatus,
 });
 
-
 export const ContentDB = Record({
     createdAt: nat64, 
     dbName: text, 
-    articles: StableBTreeMap(User, Vec(Article), 0),
+    articles: Vec(Article),
 });
 
 export const AccessControlPermission = Variant({
     View: Null, 
-    Edit: Null, 
-    Delete: Null, 
+    Edit: Null, // +View
+    Delete: Null, // +Edit
 });
+export type AccessControlPermissionKind = typeof AccessControlPermission;
 
 export const AccessControl = Record({
     user: User, 
     permission: AccessControlPermission, // View (default) | Edit | Delete
 });
+
 
 /**
  * 
@@ -54,12 +57,24 @@ export const AccessControl = Record({
  **/
 
 // dDocs (appAdmin, appDB)
-let dDocsApp = StableBTreeMap(Principal, ContentDB, 0);
+const MEM_IDX_CONTENTDB = 0;
+let dDocsApp = StableBTreeMap(Principal, ContentDB, MEM_IDX_CONTENTDB);
+
+// const MEM_IDX_CONTENTDB_ARTICLES = 1;
+// let articles = StableBTreeMap(Principal, Vec(Article), MEM_IDX_CONTENTDB_ARTICLES)
+
 // dDocs API exposed via canister
 //export const dDocs = StableBTreeMap()
 
-/* Init * App Management */
+/* Init + App Management */
 export const initApp = update([text], Void, (dbName) => {
+    let admin: typeof User = {
+        id: ic.caller(), 
+        role: UserRole, 
+        username: "admin", 
+        email: "admin@dDocs",
+    };
+
     const dDocsDB: typeof ContentDB = {
         createdAt: ic.time(),
         dbName: dbName, 
@@ -92,5 +107,10 @@ export const approveUser = () => {}; // only admin
 export const revokeUser = () => {}; // only admin
 
 // article management
+export const fetchArticles = query([], Vec(Article), () => {
+    // let's allow only the admin to get everything right now, for testing
+    const contentDB = dDocsApp.get(ic.caller());
 
+    return contentDB.Articles.values();    
+});
 // article management: publishing flow

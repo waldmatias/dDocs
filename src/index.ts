@@ -16,36 +16,8 @@ let message = '';
 // v.2
 // type doc-item-change
 //  propose_changes(doc-item) -- merging?
-const Tarea = Record({
-    id: Principal, 
-    actividad: text, 
-    estado: bool,
-})
-
-let tareas = StableBTreeMap(Principal, Tarea, 0);
 
 export default Canister({
-
-    // mw 
-    createTarea: update([text, bool], Tarea, (actividad, estado) => {
-        const id = generarID();
-
-        const tarea: typeof Tarea = {
-            id, 
-            actividad,
-            estado,
-        };
-
-        tareas.insert(tarea.id, tarea, 0);
-
-        return tarea;
-    }), 
-
-    muestraTareas: query([], Vec(Tarea), () => {
-        return tareas.values();
-    }),
-    // mw
-
     getAuthor: query([text], text, (author) => {
         return author;
     }), 

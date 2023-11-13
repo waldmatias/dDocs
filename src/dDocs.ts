@@ -1,4 +1,8 @@
-import { Principal, Record, Variant, text, Null, update, bool, Void, StableBTreeMap } from "azle";
+import { 
+    ic, query, update, Some,
+    Principal, Record, Variant, text, Null, bool, Void, Opt,
+    StableBTreeMap, nat64, Vec 
+} from "azle";
 
 export const UserRole = Variant({
     Admin: Null, 
@@ -26,9 +30,15 @@ export const ArticleStatus = Variant({
 
 
 export const ContentDB = Record({
+    createdAt: nat64, 
+    dbName: text, 
+    articles: Vec(Article),
+    /*
     article: Article, 
     // author: -- optimization
     status: ArticleStatus, 
+    // createArticle
+    */
 });
 
 export const AccessControlPermission = Variant({
@@ -53,14 +63,28 @@ let dDocsApp = StableBTreeMap(Principal, ContentDB, 0);
 // dDocs API exposed via canister
 //export const dDocs = StableBTreeMap()
 
-
 /* Init */
-export const init = update([Principal], Void, (principal) => {
-    
+export const initApp = update([text], Void, (dbName) => {
+    const dDocsDB: typeof ContentDB = {
+        createdAt: ic.time(),
+        dbName: dbName, 
+        articles: [],
+    };
+
+    dDocsApp.insert(ic.caller(), dDocsDB)
+});
+
+export const getCurrentAdmin = query([], Principal, () => {
+    return dDocsApp
+});
+
+export const isAdmin = query([], bool, () => {
+    return dDocsApp.containsKey(ic.caller());
 });
 
 export const transferAdmin = update([Principal], Void, (principal) => {
     // check caller is current admin
+    dDocsApp.get(principal)
 });
 
 
@@ -73,4 +97,5 @@ export const approveUser = () => {}; // only admin
 export const revokeUser = () => {}; // only admin
 
 // article management
+
 // article management: publishing flow

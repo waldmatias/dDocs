@@ -1,5 +1,5 @@
 import { Canister, query, update, Void, text } from 'azle';
-import { init, transferAdmin, registerUser } from './dDocs';
+import { initApp, isAdmin, getCurrentAdmin, transferAdmin, registerUser } from './dDocs';
 
 // v.1
 // type doc-item: Article(Blob) { item-type: text | mime-type, owner, published }
@@ -18,7 +18,9 @@ import { init, transferAdmin, registerUser } from './dDocs';
 
 export default Canister({
     // dDocs init
-    init, 
+    initApp, 
+    isAdmin, 
+    getCurrentAdmin,
     transferAdmin, 
 
     /* User Management */ 
@@ -27,9 +29,8 @@ export default Canister({
     // transferAdmin (only current admin can change/transfer to other user)
 
     // Article Management
-    // getArticle
-    // createArticle
-    // updateArticle
+    // fetchArticle
+    // updateArticle (if no id, then createArticle)
     
     // User Management
     // registerUser

@@ -1,4 +1,4 @@
-import { Principal, Record, Variant, text, Null, update, bool, Void } from "azle";
+import { Principal, Record, Variant, text, Null, update, bool, Void, StableBTreeMap } from "azle";
 
 export const UserRole = Variant({
     Admin: Null, 
@@ -24,6 +24,7 @@ export const ArticleStatus = Variant({
     Published: Null, 
 });
 
+
 export const ContentDB = Record({
     article: Article, 
     // author: -- optimization
@@ -41,10 +42,27 @@ export const AccessControl = Record({
     permission: AccessControlPermission, // View (default) | Edit | Delete
 });
 
+/**
+ * 
+ * dDocs App 
+ * 
+ **/
+
+// dDocs (appAdmin, appDB)
+let dDocsApp = StableBTreeMap(Principal, ContentDB, 0);
+// dDocs API exposed via canister
+//export const dDocs = StableBTreeMap()
+
+
 /* Init */
 export const init = update([Principal], Void, (principal) => {
     
 });
+
+export const transferAdmin = update([Principal], Void, (principal) => {
+    // check caller is current admin
+});
+
 
 /* User Management */
 export const registerUser = update([Principal, text, text], bool, (principal, username, email) => {

@@ -1,8 +1,14 @@
 import { Principal, Record, Variant, text, Null } from "azle";
 
+const UserRole = Variant({
+    Admin: Null, 
+    Author: Null, 
+    Editor: Null,
+});
+
 const User = Record({
     id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
-    role: text, // Author | Editor | Admin
+    role: UserRole, // Author | Editor | Admin
     username: text, 
     email: text
 });

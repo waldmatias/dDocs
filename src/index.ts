@@ -1,7 +1,7 @@
-import { Canister, query, update, Void, text, Record, Principal, bool } from 'azle';
+import { Canister, query, update, Void, text, Record, Variant, Principal, bool, Null } from 'azle';
 
 const User = Record({
-    id: Principal,
+    id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
     role: text, // Author | Editor | Admin
     username: text, 
     email: text
@@ -12,10 +12,25 @@ const Article = Record({
     content: text
 });
 
+const ArticleStatus = Variant({
+    Draft: Null, 
+    Published: Null, 
+});
+
 const ContentDB = Record({
     article: Article, 
     // author: -- optimization
-    published: bool, 
+    status: ArticleStatus, 
+});
+
+const AccessControlPermission = Variant({
+    View: Null, 
+    Edit: Null, 
+    Delete: Null, 
+})
+const AccessControl = Record({
+    user: User, 
+    permission: AccessControlPermission, // View (default) | Edit | Delete
 });
 
 // v.1
@@ -31,14 +46,18 @@ const ContentDB = Record({
 // v.2
 // type doc-item-change
 //  propose_changes(doc-item) -- merging?
+// process urls: transform url links to canister call getArticle()
 
 export default Canister({
-    // init
-    // setAdmin
+    // init: set caller() to admin. Allow transfer to other admin? 
+    // transferAdmin (only current admin can change/transfer to other user)
 
+    // Article Management
+    // getArticle
     // createArticle
     // updateArticle
     
+    // User Management
     // registerUser
     getAuthor: query([text], text, (author) => {
         return author;

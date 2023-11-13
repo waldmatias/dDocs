@@ -1,6 +1,6 @@
 import { 
-    ic, query, update, Some,
-    Principal, Record, Variant, text, Null, bool, Void, Opt,
+    ic, query, update, 
+    Principal, Record, Variant, text, Null, bool, Void,
     StableBTreeMap, nat64, Vec 
 } from "azle";
 
@@ -13,14 +13,9 @@ export const UserRole = Variant({
 
 export const User = Record({
     id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
-    role: UserRole, // Viewer, Author | Editor | Admin
+    role: UserRole, // Viewer | Author | Editor | Admin
     username: text, 
     email: text
-});
-
-export const Article = Record({ 
-    author: User, // owner
-    content: text
 });
 
 export const ArticleStatus = Variant({
@@ -28,17 +23,17 @@ export const ArticleStatus = Variant({
     Published: Null, 
 });
 
+export const Article = Record({ 
+    author: User, // owner
+    content: text, 
+    status: ArticleStatus,
+});
+
 
 export const ContentDB = Record({
     createdAt: nat64, 
     dbName: text, 
-    articles: Vec(Article),
-    /*
-    article: Article, 
-    // author: -- optimization
-    status: ArticleStatus, 
-    // createArticle
-    */
+    articles: StableBTreeMap(User, Vec(Article), 0),
 });
 
 export const AccessControlPermission = Variant({
@@ -63,7 +58,7 @@ let dDocsApp = StableBTreeMap(Principal, ContentDB, 0);
 // dDocs API exposed via canister
 //export const dDocs = StableBTreeMap()
 
-/* Init */
+/* Init * App Management */
 export const initApp = update([text], Void, (dbName) => {
     const dDocsDB: typeof ContentDB = {
         createdAt: ic.time(),

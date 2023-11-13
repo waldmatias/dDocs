@@ -25,29 +25,7 @@ export default Canister({
 
     /* User Management */ 
     registerUser, 
-    // init: set caller() to admin. Allow transfer to other admin? 
-    // transferAdmin (only current admin can change/transfer to other user)
-
-    // Article Management
+    /* Article Management */
     // fetchArticle
     // updateArticle (if no id, then createArticle)
-    
-    // User Management
-    // registerUser
-    getAuthor: query([text], text, (author) => {
-        return author;
-    }),
-
-
-    /*  
-    // Query calls complete quickly because they do not go through consensus
-    getMessage: query([], text, () => {
-        return message;
-    }),
-    // Update calls take a few seconds to complete
-    // This is because they persist state changes and go through consensus
-    setMessage: update([text], Void, (newMessage) => {
-        message = newMessage; // This change will be persisted
-    })
-    */
 });

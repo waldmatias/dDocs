@@ -32,11 +32,3 @@ export default Canister({
         message = newMessage; // This change will be persisted
     })
 });
-
-function generarID(): Principal {
-    const randomBytes = new Array(29)
-        .fill(0)
-        .map((_) => Math.floor(Math.random() * 256));
-
-    return Principal.fromUint8Array(Uint8Array.from(randomBytes))
-}

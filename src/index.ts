@@ -1,5 +1,5 @@
-import { Canister, query, update, Void, text } from 'azle';
-import { initApp, isAdmin, getKeys, transferAdmin, registerUser, fetchArticles } from './dDocs';
+import { Canister } from 'azle';
+import { initApp, isAdmin, getKeys, getValues, getContentDBAt, transferAdmin, registerUser, fetchArticles } from './dDocs';
 
 // v.1
 // type doc-item: Article(Blob) { item-type: text | mime-type, owner, published }
@@ -31,4 +31,6 @@ export default Canister({
 
     /* test */
     getKeys,
+    getValues, 
+    getContentDBAt, 
 });

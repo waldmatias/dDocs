@@ -1,7 +1,7 @@
 import { 
     ic, query, update, 
     Principal, Record, Variant, text, Null, bool, Void,
-    StableBTreeMap, nat64, Vec, Tuple, 
+    StableBTreeMap, nat8, nat64, Vec, Tuple, 
 } from "azle";
 
 export const UserRole = Variant({
@@ -89,6 +89,12 @@ export const initApp = update([text], Void, (dbName) => {
 export const getKeys = query([], Vec(User), () => {
     return dDocsApp.keys();
 });
+export const getValues = query([], Vec(ContentDB), () => {
+    return dDocsApp.values();
+});
+export const getContentDBAt = query([nat8], ContentDB, (dbId) => {
+    return dDocsApp.values[dbId];
+});
 
 export const isAdmin = query([], bool, () => {
     return dDocsApp.containsKey({ id: ic.caller() });
@@ -104,6 +110,7 @@ export const transferAdmin = update([Principal], Void, (principal) => {
 export const registerUser = update([text, text], Void, (username, email) => {
     const newUser: typeof User = {
         id: ic.caller(), 
+        role: { Viewer: null },
         username: username, 
         email: email, 
     };
@@ -111,7 +118,7 @@ export const registerUser = update([text, text], Void, (username, email) => {
     dDocsApp[MEM_IDX_CONTENTDB].users.push(newUser);
 });
 
-export const approveUser = () => {}; // only admin
+export const changeUserRole = () => {}; // only admin
 export const revokeUser = () => {}; // only admin
 
 // article management

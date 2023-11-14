@@ -14,7 +14,7 @@ export type UserRoleKind = typeof UserRole;
 
 export const User = Record({
     id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
-    // role: UserRole, // Viewer | Author | Editor | Admin
+    role: UserRole, // Viewer | Author | Editor | Admin
     username: text, 
     email: text
 });
@@ -71,7 +71,7 @@ let dDocsApp = StableBTreeMap(User, ContentDB, MEM_IDX_CONTENTDB);
 export const initApp = update([text], Void, (dbName) => {
     let admin: typeof User = {
         id: ic.caller(), 
-        // role: { Admin: null }, 
+        role: { Admin: null }, 
         username: "admin", 
         email: "admin@dDocs",
     };
@@ -101,8 +101,14 @@ export const transferAdmin = update([Principal], Void, (principal) => {
 
 
 /* User Management */
-export const registerUser = update([Principal, text, text], bool, (principal, username, email) => {
-    return true; 
+export const registerUser = update([text, text], Void, (username, email) => {
+    const newUser: typeof User = {
+        id: ic.caller(), 
+        username: username, 
+        email: email, 
+    };
+
+    dDocsApp[MEM_IDX_CONTENTDB].users.push(newUser);
 });
 
 export const approveUser = () => {}; // only admin

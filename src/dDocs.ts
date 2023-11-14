@@ -1,7 +1,7 @@
 import { 
     ic, query, update, 
     Principal, Record, Variant, text, Null, bool, Void,
-    StableBTreeMap, nat64, Vec 
+    StableBTreeMap, nat64, Vec, Tuple, 
 } from "azle";
 
 export const UserRole = Variant({
@@ -14,7 +14,7 @@ export type UserRoleKind = typeof UserRole;
 
 export const User = Record({
     id: Principal, // test -> Principal.fromUint8Array(Uint8Array.from([0])),
-    role: UserRole, // Viewer | Author | Editor | Admin
+    // role: UserRole, // Viewer | Author | Editor | Admin
     username: text, 
     email: text
 });
@@ -34,6 +34,7 @@ export const Article = Record({
 export const ContentDB = Record({
     createdAt: nat64, 
     dbName: text, 
+    users: Vec(User),
     articles: Vec(Article),
 });
 
@@ -58,7 +59,7 @@ export const AccessControl = Record({
 
 // dDocs (appAdmin, appDB)
 const MEM_IDX_CONTENTDB = 0;
-let dDocsApp = StableBTreeMap(Principal, ContentDB, MEM_IDX_CONTENTDB);
+let dDocsApp = StableBTreeMap(User, ContentDB, MEM_IDX_CONTENTDB);
 
 // const MEM_IDX_CONTENTDB_ARTICLES = 1;
 // let articles = StableBTreeMap(Principal, Vec(Article), MEM_IDX_CONTENTDB_ARTICLES)
@@ -70,7 +71,7 @@ let dDocsApp = StableBTreeMap(Principal, ContentDB, MEM_IDX_CONTENTDB);
 export const initApp = update([text], Void, (dbName) => {
     let admin: typeof User = {
         id: ic.caller(), 
-        role: UserRole, 
+        // role: { Admin: null }, 
         username: "admin", 
         email: "admin@dDocs",
     };
@@ -78,18 +79,19 @@ export const initApp = update([text], Void, (dbName) => {
     const dDocsDB: typeof ContentDB = {
         createdAt: ic.time(),
         dbName: dbName, 
+        users: [],
         articles: [],
     };
 
-    dDocsApp.insert(ic.caller(), dDocsDB)
+    dDocsApp.insert(admin, dDocsDB)
 });
 
-export const getCurrentAdmin = query([], Principal, () => {
-    return dDocsApp
+export const getKeys = query([], Vec(User), () => {
+    return dDocsApp.keys();
 });
 
 export const isAdmin = query([], bool, () => {
-    return dDocsApp.containsKey(ic.caller());
+    return dDocsApp.containsKey({ id: ic.caller() });
 });
 
 export const transferAdmin = update([Principal], Void, (principal) => {

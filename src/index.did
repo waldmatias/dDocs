@@ -1,6 +1,6 @@
 service: () -> {
-    fetchArticles: () -> (vec record {status:variant {Draft; Published}; content:text; author:record {id:principal; username:text; role:variant {Viewer; Editor; Author; Admin}; email:text}}) query;
-    getCurrentAdmin: () -> (principal) query;
+    fetchArticles: () -> (vec record {status:variant {Draft; Published}; content:text; author:record {id:principal; username:text; email:text}}) query;
+    getKeys: () -> (vec record {id:principal; username:text; email:text}) query;
     initApp: (text) -> ();
     isAdmin: () -> (bool) query;
     registerUser: (principal, text, text) -> (bool);
